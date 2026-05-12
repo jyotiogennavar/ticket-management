@@ -1,8 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Link from "next/link";
-import { homePath, ticketsPath } from "@/paths";
+import { Header } from "@/components/Header";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,26 +20,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased`}>
-        <nav
-          className="
-            supports-backdrop-blur:bg-background/60
-            fixed left-0 right-0 top-0 z-20
-            border-b bg-background/95 backdrop-blur
-            w-full flex py-2.5 px-5 justify-between
-          "
-        >
-          <div>
-            <Link href={homePath()} className="text-lg font-bold">
-              Home
-            </Link>
-          </div>
-          <div>
-            <Link href={ticketsPath()} className="text-sm underline">
-              Tickets
-            </Link>
-          </div>
-        </nav>
+      <body className={`${inter.variable} ${inter.className} antialiased`}>
+        <Header />
         <main
           className="
             min-h-screen flex-1
