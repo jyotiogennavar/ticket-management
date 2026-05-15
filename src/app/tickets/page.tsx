@@ -13,7 +13,11 @@ const TicketsPage = () => {
 
       <div className="flex-1 flex flex-col items-center gap-y-4 animate-fade-from-top">
         {initialTickets.map((ticket) => (
-          <TicketItem key={ticket.id} ticket={ticket as unknown as Ticket} />
+          <TicketItem
+            key={ticket.id}
+            ticket={ticket as unknown as Ticket}
+            isDetail={false}
+          />
         ))}
       </div>
     </div>
