@@ -1,7 +1,7 @@
 import { Heading } from "@/components/Heading";
 import { Suspense } from "react";
 import { TicketList } from "@/features/ticket/components/ticket-list";
-import { Spinner } from "@/components/Spinner";
+import { TicketListSkeleton } from "@/components/TIcketSkeleton";
 
 const TicketsPage = () => {
 
@@ -9,7 +9,7 @@ const TicketsPage = () => {
     <div className="flex-1 flex flex-col gap-y-8">
       <Heading title="Tickets" description="All your tickets at one place" />
 
-      <Suspense fallback={<Spinner />}>
+      <Suspense fallback={<TicketListSkeleton />}>
         <TicketList />
       </Suspense>
     </div>
