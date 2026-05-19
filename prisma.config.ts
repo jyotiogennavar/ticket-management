@@ -7,6 +7,7 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
+    seed: "prisma/seed.ts",
   },
   datasource: {
     // Migrate / db push need a direct Postgres session. Supabase transaction pooler (:6543)

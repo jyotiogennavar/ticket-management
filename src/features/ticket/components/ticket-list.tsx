@@ -1,5 +1,4 @@
 import { getTickets } from "../queries/get-tickets";
-import { Ticket } from "../types";
 import { TicketItem } from "./ticket-item";
 
 const TicketList = async () => {
@@ -7,14 +6,11 @@ const TicketList = async () => {
   return (
     <div className="flex-1 flex flex-col items-center gap-y-4 animate-fade-from-top">
       {tickets?.map((ticket) => (
-        <TicketItem
-          key={ticket.id}
-          ticket={ticket as unknown as Ticket}
-          isDetail={false}
-        />
+        <TicketItem key={ticket.id} ticket={ticket} isDetail={false} />
       ))}
     </div>
   );
 };
 
 export { TicketList };
+
