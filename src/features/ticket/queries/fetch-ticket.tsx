@@ -7,5 +7,6 @@ export const fetchTicket = async (id: string) : Promise<Ticket | null> => {
       id: id,
     },
   });
+  
 };
 
