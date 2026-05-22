@@ -1,5 +1,5 @@
 import { TicketItem } from "@/features/ticket/components/ticket-item";
-import { Ticket } from "@/features/ticket/types";
+// import { Ticket } from "@/features/ticket/types";
 import { fetchTicket } from "@/features/ticket/queries/fetch-ticket";
 import { notFound } from "next/navigation";
 
