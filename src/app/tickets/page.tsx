@@ -1,7 +1,7 @@
 import { Heading } from "@/components/Heading";
 import { Suspense } from "react";
 import { TicketList } from "@/features/ticket/components/ticket-list";
-import { TicketListSkeleton } from "@/components/TIcketSkeleton";
+import { TicketListSkeleton } from "@/components/TicketSkeleton";
 
 import { CardCompact } from "@/components/CardCompact";
 import { TicketUpsertForm } from "@/features/ticket/components/ticket-upsert-form";
