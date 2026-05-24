@@ -4,7 +4,9 @@ import { TicketList } from "@/features/ticket/components/ticket-list";
 import { TicketListSkeleton } from "@/components/TIcketSkeleton";
 
 import { CardCompact } from "@/components/CardCompact";
-import { TicketCreateForm } from "@/features/ticket/components/ticket-create-form";
+import { TicketUpsertForm } from "@/features/ticket/components/ticket-upsert-form";
+
+
 
 const TicketsPage = () => {
   return (
@@ -15,7 +17,7 @@ const TicketsPage = () => {
         title="Create Ticket"
         description="A new ticket will be created"
         className="w-full max-w-[420px] self-center"
-        content={<TicketCreateForm />}
+        content={<TicketUpsertForm />}
       />
 
       <Suspense fallback={<TicketListSkeleton />}>
