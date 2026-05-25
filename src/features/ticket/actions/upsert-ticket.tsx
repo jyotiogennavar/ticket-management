@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import {
@@ -48,10 +47,11 @@ export const upsertTicket = async (
   revalidatePath(ticketsPath());
 
   if (id) {
-    redirect(ticketPath(id));
-  } else {
-    redirect(ticketsPath());
+    revalidatePath(ticketPath(id));
   }
 
-  return toActionState("SUCCESS", "Ticket created successfully");
+  return toActionState(
+    "SUCCESS",
+    id ? "Ticket updated successfully" : "Ticket created successfully",
+  );
 };

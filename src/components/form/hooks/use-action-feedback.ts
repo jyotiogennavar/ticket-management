@@ -1,16 +1,33 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { ActionState } from "../utils/to-action-state";
 
-const useActionFeedback = (actionState: ActionState) => {
+type onArgs = {
+  actionState: ActionState;
+};
+
+type useActionFeedbackOptions = {
+  onSuccess?: (args: onArgs) => void;
+  onError?: (args: onArgs) => void;
+};
+
+const useActionFeedback = (
+  actionState: ActionState,
+  options: useActionFeedbackOptions,
+) => {
+  const prevTimestamp = useRef<number>(actionState.timestamp);
+
   useEffect(() => {
+    if (prevTimestamp.current === actionState.timestamp) return;
+
     if (actionState.status === "SUCCESS") {
-      console.log(actionState.message);
+      options.onSuccess?.({ actionState });
     }
     if (actionState.status === "ERROR") {
-      console.log(actionState.message);
+      options.onError?.({ actionState });
     }
-  }, [actionState]);
+    prevTimestamp.current = actionState.timestamp;
+  }, [actionState, options]);
 };
 
 export { useActionFeedback };
