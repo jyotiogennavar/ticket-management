@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ticketsPath } from "@/paths";
-import { Button } from "@/components/ui/button";
+
 import { Heading } from "@/components/Heading";
+import { Button } from "@/components/ui/button";
+import { ticketsPath } from "@/paths";
 
 const HomePage = () => {
   return (

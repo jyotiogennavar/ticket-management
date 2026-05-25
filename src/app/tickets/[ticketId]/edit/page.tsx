@@ -1,5 +1,6 @@
 
 import { notFound } from "next/navigation";
+
 import { CardCompact } from "@/components/CardCompact";
 import { TicketUpsertForm } from "@/features/ticket/components/ticket-upsert-form";
 import { fetchTicket } from "@/features/ticket/queries/fetch-ticket";
