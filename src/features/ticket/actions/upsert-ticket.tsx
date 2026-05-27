@@ -1,8 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
+import { setCookieByKey } from "@/actions/cookies";
 import {
   ActionState,
   fromErrorToActionState,
@@ -10,6 +12,7 @@ import {
 } from "@/components/form/utils/to-action-state";
 import { prisma } from "@/lib/prisma";
 import { ticketPath, ticketsPath } from "@/paths";
+
 
 const upsertTicketSchema = z.object({
   title: z.string().min(1).max(255),
@@ -47,7 +50,9 @@ export const upsertTicket = async (
   revalidatePath(ticketsPath());
 
   if (id) {
-    revalidatePath(ticketPath(id));
+    await setCookieByKey("toast", "Ticket updated");
+    redirect(ticketPath(id));
+
   }
 
   return toActionState(

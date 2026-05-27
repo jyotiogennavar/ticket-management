@@ -2,11 +2,10 @@ import { Suspense } from "react";
 
 import { CardCompact } from "@/components/CardCompact";
 import { Heading } from "@/components/Heading";
+import { RedirectToast } from "@/components/redirect-toast";
 import { TicketListSkeleton } from "@/components/TicketSkeleton";
 import { TicketList } from "@/features/ticket/components/ticket-list";
 import { TicketUpsertForm } from "@/features/ticket/components/ticket-upsert-form";
-
-
 
 const TicketsPage = () => {
   return (
@@ -23,6 +22,7 @@ const TicketsPage = () => {
       <Suspense fallback={<TicketListSkeleton />}>
         <TicketList />
       </Suspense>
+      <RedirectToast />
     </div>
   );
 };
