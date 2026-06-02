@@ -12,12 +12,16 @@ import {
 } from "@/components/form/utils/to-action-state";
 import { prisma } from "@/lib/prisma";
 import { ticketPath, ticketsPath } from "@/paths";
-
+import { toCent } from "@/utils/currency";
 
 const upsertTicketSchema = z.object({
   title: z.string().min(1).max(255),
   content: z.string().min(1).max(255),
+  deadline: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Is required"),
+  bounty: z.coerce.number().min(0).max(1000000),
 });
+
+
 
 export const upsertTicket = async (
   id: string | undefined,
@@ -26,10 +30,14 @@ export const upsertTicket = async (
 ): Promise<ActionState> => {
   let data: z.infer<typeof upsertTicketSchema>;
 
+  
+
   try {
     const validatedFields = upsertTicketSchema.safeParse({
       title: formData.get("title"),
       content: formData.get("content"),
+      deadline: formData.get("deadline"),
+      bounty: formData.get("bounty"),
     });
 
     if (!validatedFields.success) {

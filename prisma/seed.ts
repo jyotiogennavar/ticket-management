@@ -16,18 +16,24 @@ const prisma = new PrismaClient({ adapter });
 const tickets = [
   {
     title: "Ticket 1",
-    content: "This is the content of Ticket 1 from database seed",
-    status: "OPEN" as const,
+    content: "First ticket from DB.",
+    status: "DONE" as const,
+    deadline: new Date().toISOString().split("T")[0],
+    bounty: 499,
   },
   {
     title: "Ticket 2",
-    content: "This is the content of Ticket 2 from database seed",
-    status: "DONE" as const,
+    content: "Second ticket from DB.",
+    status: "OPEN" as const,
+    deadline: new Date().toISOString().split("T")[0],
+    bounty: 399,
   },
   {
     title: "Ticket 3",
-    content: "This is the content of Ticket 3 from database seed",
+    content: "Third ticket from DB.",
     status: "IN_PROGRESS" as const,
+    deadline: new Date().toISOString().split("T")[0],
+    bounty: 599,
   },
 ];
 

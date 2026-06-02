@@ -1,6 +1,7 @@
 "use client";
 import { useActionState } from "react";
 
+import { DatePicker } from "@/components/date-picker";
 import { FieldError } from "@/components/form/field-error";
 import { Form } from "@/components/form/form";
 import { SubmitButton } from "@/components/form/submit-button";
@@ -13,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { upsertTicket } from "@/features/ticket/actions/upsert-ticket";
 import { Ticket } from "@/generated/prisma/client";
+import { toCent } from "@/utils/currency";
 type TicketUpsertFormProps = {
   ticket?: Ticket;
 };
@@ -43,6 +45,32 @@ const TicketUpsertForm = ({ ticket }: TicketUpsertFormProps) => {
         defaultValue={actionState.payload?.content ?? ticket?.content}
       />
       <FieldError actionState={actionState} name="content" />
+      <div className="flex gap-x-2 mb-1">
+        <div className="w-1/2">
+          <Label htmlFor="deadline">Deadline</Label>
+
+          <DatePicker
+            id="deadline"
+            name="deadline"
+            defaultValue={actionState.payload?.deadline ?? ticket?.deadline}
+            
+          />
+          <FieldError actionState={actionState} name="deadline" />
+      </div>
+        <div className="w-1/2">
+          <Label htmlFor="bounty">Bounty</Label>
+          <Input
+            id="bounty"
+            name="bounty"
+            type="number"
+            step=".01"
+            defaultValue={actionState.payload?.bounty ?? ticket?.bounty}
+            className="mt-2"
+          />
+          <FieldError actionState={actionState} name="bounty" />
+        </div>
+      </div>
+
       <SubmitButton label={ticket ? "Edit" : "Create"} />
     </Form>
   );
