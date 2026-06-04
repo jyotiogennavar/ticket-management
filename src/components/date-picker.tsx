@@ -12,6 +12,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+import { Input } from "./ui/input";
+
 type DatePickerProps = {
   id: string;
   name: string;
@@ -26,13 +28,14 @@ const DatePicker = ({ id, name, defaultValue }: DatePickerProps) => {
   const formattedStringDate = date ? format(date, "yyyy-MM-dd") : "";
   return (
     <Popover>
-      <PopoverTrigger id={id} className="w-full" asChild>
+      <PopoverTrigger id={id} name={name} className="w-full" asChild>
         <Button
           variant="outline"
-          className="justify-start text-left font-normal"
+          className="justify-start text-left font-normal mt-2"
         >
           <LucideCalendar className="mr-2 h-4 w-4" />
           {formattedStringDate}
+          <Input type="hidden" name={name} value={formattedStringDate} />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">

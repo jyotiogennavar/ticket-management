@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent,CardFooter,CardHeader, CardTitle } from "@/components/ui/card";
 import { Ticket } from "@/generated/prisma/client";
 import { ticketEditPath,ticketPath } from "@/paths";
+import { toCurrencyFromCent } from "@/utils/currency";
 
 import { deleteTicket } from "../actions/delete-ticket";
 import { TICKET_ICONS } from "../constants";
@@ -48,7 +49,7 @@ const TicketItem = ({ ticket, isDetail }: TicketItemProps) => {
       })}
     >
       <Card className="w-full overflow-hidden">
-        <CardHeader>
+        <CardHeader>  
           <CardTitle className="flex items-center gap-x-2 text-base">
             <span className="size-5">
               {TICKET_ICONS[ticket.status as keyof typeof TICKET_ICONS]}
@@ -66,9 +67,9 @@ const TicketItem = ({ ticket, isDetail }: TicketItemProps) => {
             {ticket.content}
           </span>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex justify-between">
         <p className="text-sm text-muted-foreground">{ticket.deadline}</p>
-        <p className="text-sm text-muted-foreground">{ticket.bounty}</p>
+        <p className="text-sm text-muted-foreground">{toCurrencyFromCent(ticket.bounty) }</p>
         </CardFooter>
       </Card>
       {/* View button */}
