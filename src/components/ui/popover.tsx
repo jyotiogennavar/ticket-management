@@ -5,7 +5,6 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-type PopoverProps = React.ComponentProps<typeof PopoverPrimitive.Root>;
 
 function Popover({
   ...props
