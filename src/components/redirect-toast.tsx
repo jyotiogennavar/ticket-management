@@ -1,14 +1,21 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 import { deleteCookieByKey, getCookieByKey } from "@/actions/cookies";
 
 const RedirectToast = () => {
-  const Pathname = usePathname();
+  const pathname = usePathname();
+  const checkedPathsRef = useRef<Set<string>>(new Set());
+
   useEffect(() => {
+    if (checkedPathsRef.current.has(pathname)) {
+      return;
+    }
+    checkedPathsRef.current.add(pathname);
+
     const showCookieToast = async () => {
       const message = await getCookieByKey("toast");
 
@@ -19,7 +26,7 @@ const RedirectToast = () => {
     };
 
     showCookieToast();
-  }, [Pathname]);
+  }, [pathname]);
 
   return null;
 };

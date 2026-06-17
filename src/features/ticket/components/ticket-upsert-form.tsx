@@ -53,7 +53,7 @@ const TicketUpsertForm = ({ ticket }: TicketUpsertFormProps) => {
         defaultValue={actionState.payload?.content ?? ticket?.content}
       />
       <FieldError actionState={actionState} name="content" />
-      <div className="flex gap-x-2 mt-2 mb-1">
+      <div className="flex gap-x-2 mt-2 mb-4">
         <div className="w-1/2">
           <Label htmlFor="deadline">Deadline</Label>
 
