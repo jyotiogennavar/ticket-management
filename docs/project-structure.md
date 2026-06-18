@@ -41,11 +41,12 @@ Current groups:
   - `src/components/CardCompact.tsx`
   - `src/components/Placeholder.tsx`
   - `src/components/Spinner.tsx`
-  - `src/components/TIcketSkeleton.tsx`
+  - `src/components/TicketSkeleton.tsx`
+  - `src/components/confirm-dialog.tsx`
   - `src/components/redirect-toast.tsx`
   - `src/components/date-picker.tsx`
 - UI primitives (`src/components/ui`), mostly shadcn/radix wrappers:
-  - `button.tsx`, `card.tsx`, `input.tsx`, `label.tsx`, `textarea.tsx`
+  - `alert-dialog.tsx`, `button.tsx`, `card.tsx`, `input.tsx`, `label.tsx`, `textarea.tsx`
   - `calendar.tsx`, `popover.tsx`, `separator.tsx`, `sonner.tsx`, `dropdown-menu.tsx`
 - Form infrastructure (`src/components/form`):
   - `form.tsx`, `submit-button.tsx`, `field-error.tsx`
@@ -71,6 +72,7 @@ Current feature:
   - `actions/`
     - `upsert-ticket.tsx`
     - `delete-ticket.tsx`
+    - `update-ticket-status.tsx`
   - `queries/`
     - `get-tickets.tsx`
     - `fetch-ticket.tsx`
@@ -99,8 +101,9 @@ Current examples:
 
 Use this for app-level utility helpers that are not feature-specific and not framework client setup.
 
-Current example:
+Current examples:
 - `src/utils/currency.ts`: Currency conversion helpers.
+- `src/utils/urls.ts`: Environment-aware base URL helper (`getBaseUrl`).
 
 ### Other `src` Files
 
