@@ -26,6 +26,13 @@ export const signIn = async (_actionState: ActionState, formData: FormData) => {
       where: { email },
     });
 
+    if (!user) {
+      return fromErrorToActionState(
+        new Error("Invalid email or password"),
+        formData,
+      );
+    }
+
     const isValidPassword =
       user && (await bcrypt.compare(password, user.passwordHash));
 

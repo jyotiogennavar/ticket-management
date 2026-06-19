@@ -21,10 +21,28 @@ const SignUpForm = () => {
 
   return (
     <Form action={action} actionState={actionState}>
-      <Input className="mt-2" type="text" name="username" id="username" placeholder="Username" />
+      <Input
+        className="mt-2"
+        type="text"
+        name="username"
+        id="username"
+        placeholder="Username"
+        defaultValue={
+          actionState.payload?.username ?? "" as string
+        }
+      />
       <FieldError actionState={actionState} name="username" />
 
-      <Input className="mt-2" type="email" name="email" id="email" placeholder="Email" />
+      <Input
+        className="mt-2"
+        type="email"
+        name="email"
+        id="email"
+        placeholder="Email"
+        defaultValue={
+          actionState.payload?.email ?? "" as string
+        }
+      />
       <FieldError actionState={actionState} name="email" />
 
       <Input
@@ -33,6 +51,9 @@ const SignUpForm = () => {
         name="password"
         id="password"
         placeholder="Password"
+        defaultValue={
+          actionState.payload?.password ?? "" as string
+        }
       />
       <FieldError actionState={actionState} name="password" />
 
@@ -42,9 +63,12 @@ const SignUpForm = () => {
         name="passwordConfirmation"
         id="passwordConfirmation"
         placeholder="Password Confirmation"
+        defaultValue={
+          actionState.payload?.passwordConfirmation ?? "" as string
+        }
       />
       <FieldError actionState={actionState} name="passwordConfirmation" />
-      
+
       <SubmitButton label="Create Account" />
     </Form>
   );

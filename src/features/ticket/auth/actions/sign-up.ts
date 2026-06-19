@@ -52,7 +52,10 @@ const signUpSchema = z
     }
   });
 
-export const signUp = async (_actionState: ActionState, formData: FormData) => {
+export const signUp = async (
+  _actionState: ActionState,
+  formData: FormData,
+): Promise<ActionState> => {
   try {
     const { username, email, password } = signUpSchema.parse(
       Object.fromEntries(formData),
@@ -74,6 +77,7 @@ export const signUp = async (_actionState: ActionState, formData: FormData) => {
 
   } catch (error) {
     return fromErrorToActionState(error, formData);
+    
   }
   redirect(ticketsPath());
 };
