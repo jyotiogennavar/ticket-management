@@ -13,6 +13,7 @@ type TicketPageProps = {
 const TicketPage = async ({ params }: TicketPageProps) => {
   const { ticketId } = await params;
   const ticket = await fetchTicket(ticketId);
+  
 
   if (!ticket) {
     notFound();

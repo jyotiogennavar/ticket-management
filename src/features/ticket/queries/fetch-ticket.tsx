@@ -1,12 +1,22 @@
-import { Ticket } from "@/generated/prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
-export const fetchTicket = async (id: string) : Promise<Ticket | null> => {
+type TicketWithUser = Prisma.TicketGetPayload<{
+  include: { user: { select: { username: true } } };
+}>;
+
+export const fetchTicket = async (id: string): Promise<TicketWithUser | null> => {
   return await prisma.ticket.findUnique({
     where: {
       id: id,
     },
+    include: {
+      user: {
+        select: {
+          username: true,
+        },
+      },
+    },
   });
-  
 };
 
