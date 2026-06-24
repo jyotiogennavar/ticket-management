@@ -2,6 +2,8 @@
 import { notFound } from "next/navigation";
 
 import { CardCompact } from "@/components/CardCompact";
+import { getAuth } from "@/features/ticket/auth/queries/get-auth";
+import { isOwner } from "@/features/ticket/auth/utils/isowner";
 import { TicketUpsertForm } from "@/features/ticket/components/ticket-upsert-form";
 import { fetchTicket } from "@/features/ticket/queries/fetch-ticket";
 
@@ -15,7 +17,11 @@ const TicketEditPage = async ({ params }: TicketEditPageProps) => {
   const { ticketId } = await params;
   const ticket = await fetchTicket(ticketId);
 
-  if (!ticket) {
+  const { user } = await getAuth();
+
+  const isTicketOwner = isOwner(user, ticket);
+
+  if (!ticket || !isTicketOwner) {
     notFound();
   }
 
