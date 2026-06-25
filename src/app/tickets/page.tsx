@@ -4,13 +4,15 @@ import { CardCompact } from "@/components/CardCompact";
 import { Heading } from "@/components/Heading";
 import { RedirectToast } from "@/components/redirect-toast";
 import { TicketListSkeleton } from "@/components/TicketSkeleton";
+import { getAuth } from "@/features/ticket/auth/queries/get-auth";
 import { TicketList } from "@/features/ticket/components/ticket-list";
 import { TicketUpsertForm } from "@/features/ticket/components/ticket-upsert-form";
 
-const TicketsPage = () => {
+const TicketsPage = async () => {
+  const user = await getAuth();
   return (
     <div className="flex-1 flex flex-col gap-y-8">
-      <Heading title="Tickets" description="All your tickets at one place" />
+      <Heading title="My Tickets" description="Your tickets at one place" />
 
       <CardCompact
         title="Create Ticket"
@@ -20,7 +22,7 @@ const TicketsPage = () => {
       />
 
       <Suspense fallback={<TicketListSkeleton />}>
-        <TicketList />
+        <TicketList userId={user.user?.id ?? ""} />
       </Suspense>
       <RedirectToast />
     </div>

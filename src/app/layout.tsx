@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
 import { Header } from "@/components/Header";
+import { Sidebar } from "@/components/sidebar/components/sidebar";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -27,6 +28,8 @@ export default function RootLayout({
       <body className={`${inter.variable} ${inter.className} antialiased`}>
         <ThemeProvider>
           <Header />
+          <div className="flex min-h-screen w-full overflow-hidden border-collapse">
+          <Sidebar />
           <main
             className="
               min-h-screen flex-1
@@ -38,6 +41,7 @@ export default function RootLayout({
           >
             {children}
           </main>
+          </div>
           <Toaster />
         </ThemeProvider>
       </body>

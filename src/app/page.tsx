@@ -1,21 +1,20 @@
-import Link from "next/link";
+
+import { Suspense } from "react";
 
 import { Heading } from "@/components/Heading";
-import { Button } from "@/components/ui/button";
-import { ticketsPath } from "@/paths";
+import { RedirectToast } from "@/components/redirect-toast";
+import { TicketListSkeleton } from "@/components/TicketSkeleton";
+import { TicketList } from "@/features/ticket/components/ticket-list";
 
 const HomePage = () => {
   return (
     <div className="flex-1 flex flex-col gap-y-8">
-      <Heading title="Home" description="Your home place to start" />
+      <Heading title="All Tickets" description="Tickets from all users" />
 
-      <div className="flex-1 flex flex-col items-center">
-        <Button asChild >
-          <Link href={ticketsPath()}>
-            Go to Tickets
-          </Link>
-        </Button>
-      </div>
+      <Suspense fallback={<TicketListSkeleton />}>
+        <TicketList userId={""} />
+      </Suspense>
+      <RedirectToast />
     </div>
   );
 };

@@ -5,8 +5,15 @@ type TicketWithUser = Prisma.TicketGetPayload<{
   include: { user: { select: { username: true } } };
 }>;
 
-export const getTickets = async (): Promise<TicketWithUser[]> => {
+export const getTickets = async (
+  userId: string,
+): Promise<TicketWithUser[]> => {
   return await prisma.ticket.findMany({
+    where: {
+      userId: {
+        equals: userId,
+      },
+    },
     orderBy: {
       createdAt: "desc",
     },
