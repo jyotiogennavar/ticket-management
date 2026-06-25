@@ -3,6 +3,7 @@ import { usePathname } from "next/navigation";
 import { cloneElement } from "react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 import { closedClassName } from "../constants";
@@ -18,6 +19,8 @@ const SidebarItem = ({ isOpen, navItem }: SidebarItemProps) => {
   const isActive = path === navItem.href;
 
   return (
+    <>
+    {navItem.separator ? <Separator /> : null}
     <Link
       href={navItem.href}
       className={cn(
@@ -39,6 +42,7 @@ const SidebarItem = ({ isOpen, navItem }: SidebarItemProps) => {
         {navItem.title}
       </span>
     </Link>
+    </>
   );
 };
 
