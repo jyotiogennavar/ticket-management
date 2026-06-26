@@ -1,26 +1,19 @@
 "use client";
 
-import { LogOut, SquareKanban } from "lucide-react";
+import { SquareKanban } from "lucide-react";
 import Link from "next/link";
 
-import { signOut } from "@/features/ticket/auth/actions/sign-out";
 import { useAuth } from "@/features/ticket/auth/hooks/use-auth";
 import { homePath, signInPath, signUpPath } from "@/paths";
 
-import { SubmitButton } from "./form/submit-button";
+import { AccountDropdown } from "./account-dropdown";
 import { ThemeSwitcher } from "./theme/theme-switcher";
 import { Button } from "./ui/button";
 
 const Header = () => {
   const { user, isFetched } = useAuth();
   const navItems = !isFetched ? null : user ? (
-    <form action={signOut}>
-      <SubmitButton
-        label="Sign Out"
-        icon={<LogOut className="h-4 w-4" />}
-        variant="outline"
-      />
-    </form>
+    <AccountDropdown user={user} />
   ) : (
     <>
       <Button asChild variant="ghost">
@@ -43,7 +36,7 @@ const Header = () => {
       w-full flex py-2.5 px-5 justify-between
     "
     >
-      <div>
+      <div className="flex items-center gap-2">
         <Button asChild variant="ghost">
           <Link href={homePath()}>
             <SquareKanban />
