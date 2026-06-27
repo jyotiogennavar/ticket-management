@@ -3,8 +3,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
-import { Header } from "@/components/Header";
-import { SidebarComponent } from "@/components/sidebar/components/sidebar";
+import { Header } from "@/app/_navigation/Header";
+import { SidebarComponent } from "@/app/_navigation/sidebar/components/sidebar";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";

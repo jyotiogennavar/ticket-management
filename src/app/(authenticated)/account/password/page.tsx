@@ -1,5 +1,5 @@
+import { AccountTab } from "@/app/(authenticated)/account/_navigation/tabs";
 import { Heading } from "@/components/Heading";
-import { AccountTab } from "@/features/accounts/components/account-tab";
 
 const AccountPasswordPage = () => {
   return (

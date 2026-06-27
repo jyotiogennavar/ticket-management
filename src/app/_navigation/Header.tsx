@@ -3,12 +3,11 @@
 import { SquareKanban } from "lucide-react";
 import Link from "next/link";
 
+import { AccountDropdown } from "@/app/_navigation/account-dropdown";
+import { ThemeSwitcher } from "@/components/theme/theme-switcher";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/ticket/auth/hooks/use-auth";
 import { homePath, signInPath, signUpPath } from "@/paths";
-
-import { AccountDropdown } from "./account-dropdown";
-import { ThemeSwitcher } from "./theme/theme-switcher";
-import { Button } from "./ui/button";
 
 const Header = () => {
   const { user, isFetched } = useAuth();
