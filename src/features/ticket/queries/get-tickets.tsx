@@ -1,22 +1,40 @@
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
+import { SearchParamsValue } from "../search-params";
+
 type TicketWithUser = Prisma.TicketGetPayload<{
   include: { user: { select: { username: true } } };
 }>;
 
 export const getTickets = async (
-  userId: string,
+  userId?: string,
+  searchParams?: SearchParamsValue,
 ): Promise<TicketWithUser[]> => {
   return await prisma.ticket.findMany({
     where: {
-      userId: {
-        equals: userId,
-      },
+      ...(userId
+        ? {
+            userId: {
+              equals: userId,
+            },
+          }
+        : {}),
+      ...(searchParams?.search
+        ? {
+            title: {
+              contains: searchParams.search,
+              mode: "insensitive",
+            },
+          }
+        : {}),
     },
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy:
+      searchParams?.sort === "undefined"
+        ? { createdAt: "desc" }
+        : searchParams?.sort === "bounty"
+          ? { bounty: "desc" }
+          : { createdAt: "desc" },
     include: {
       user: {
         select: {

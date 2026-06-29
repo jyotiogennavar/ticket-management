@@ -7,8 +7,12 @@ import { TicketListSkeleton } from "@/components/TicketSkeleton";
 import { getAuth } from "@/features/ticket/auth/queries/get-auth";
 import { TicketList } from "@/features/ticket/components/ticket-list";
 import { TicketUpsertForm } from "@/features/ticket/components/ticket-upsert-form";
+import { SearchParams } from "@/features/ticket/search-params";
 
-const TicketsPage = async () => {
+type TicketsPageProps = {
+  searchParams: SearchParams;
+};  
+const TicketsPage = async ({ searchParams }: TicketsPageProps) => {
   const user = await getAuth();
   return (
     <div className="flex-1 flex flex-col gap-y-8">
@@ -22,7 +26,7 @@ const TicketsPage = async () => {
       />
 
       <Suspense fallback={<TicketListSkeleton />}>
-        <TicketList userId={user.user?.id ?? ""} />
+        <TicketList userId={user.user?.id ?? ""} searchParams={searchParams} />
       </Suspense>
       <RedirectToast />
     </div>
