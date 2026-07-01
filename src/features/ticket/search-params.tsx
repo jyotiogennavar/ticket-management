@@ -1,11 +1,37 @@
-type SearchParamsRaw = {
-  search?: string | string[] | undefined;
-  sort?: string | string[] | undefined;
+import {
+  createSearchParamsCache,
+  parseAsString,
+  parseAsStringLiteral,
+} from "nuqs/server";
+
+export const searchParser = parseAsString.withDefault("").withOptions({
+  shallow: false,
+  clearOnDefault: true,
+});
+
+export const sortOptions = {
+  sortKey: ["createdAt", "bounty"],
+  sortValue: ["asc", "desc"],
+};
+  
+export const sortParser = {
+  sortKey: parseAsStringLiteral(["createdAt", "bounty"])
+    .withDefault("createdAt")
+    .withOptions({
+      shallow: false,
+      clearOnDefault: true,
+    }),
+  sortValue: parseAsStringLiteral(["asc", "desc"]).withDefault("desc").withOptions({
+    shallow: false,
+    clearOnDefault: true,
+  }),
 };
 
-export type SearchParams = SearchParamsRaw | Promise<SearchParamsRaw>;
+export const searchParamsCache = createSearchParamsCache({
+  search: searchParser,
+  ...sortParser,
+});
 
-export type SearchParamsValue = {
-  search?: string | undefined;
-  sort?: string | undefined;
-};
+export type ParsedSearchParams = Awaited<
+  ReturnType<typeof searchParamsCache.parse>
+>;

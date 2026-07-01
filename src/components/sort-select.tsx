@@ -1,52 +1,60 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "./ui/select";
 
-type Option = {
+export type SortSelectOption = {
+  sortKey: "createdAt" | "bounty";
+  sortValue: "asc" | "desc";
   label: string;
-  value: string;
+};
+
+type SortObject = {
+  sortKey: SortSelectOption["sortKey"];
+  sortValue: SortSelectOption["sortValue"];
 };
 
 type SortSelectProps = {
-  defaultValue: string;
-  options: Option[];
+  options: SortSelectOption[];
+  value: SortObject;
+  OnChange: (value: SortObject) => void;
 };
 
-const SortSelect = ({ defaultValue, options }: SortSelectProps) => {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
-
-  const handleSort = (value: string) => {
-    const params = new URLSearchParams(searchParams);
-
-    if (value === defaultValue) {
-      params.delete("sort");
-    } else {
-      params.set("sort", value);
+const SortSelect = ({ options, value, OnChange }: SortSelectProps) => {
+  const handleSort = (compositeKey: string) => {
+    const [sortKey, sortValue] = compositeKey.split("_");
+    if (
+      (sortKey !== "createdAt" && sortKey !== "bounty") ||
+      (sortValue !== "asc" && sortValue !== "desc")
+    ) {
+      return;
     }
-    replace(`${pathname}?${params.toString()}`, { scroll: false });
+
+    OnChange({
+      sortKey,
+      sortValue,
+    });
   };
 
   return (
     <Select
-      defaultValue={searchParams.get("sort")?.toString() || defaultValue}
       onValueChange={handleSort}
+      value={ value.sortKey + "_" + value.sortValue}
     >
       <SelectTrigger>
         <SelectValue />
       </SelectTrigger>
-      <SelectContent position="popper" align="start">
+      <SelectContent>
         {options.map((option) => (
-          <SelectItem key={option.value} value={option.value}>
+          <SelectItem
+            key={option.sortKey + option.sortValue}
+            value={option.sortKey + "_" + option.sortValue}
+          >
             {option.label}
           </SelectItem>
         ))}

@@ -1,172 +1,184 @@
 # Search And Sort Implementation
 
-This document describes the complete implementation of ticket search and sort across routes, UI controls, URL query params, server components, and database queries.
+This document describes the current ticket search and sort implementation across route parsing, URL state syncing, UI controls, and Prisma query construction.
 
 ## Scope
 
-Search and sort are implemented for both ticket listing surfaces:
+Search and sort are implemented for both ticket listing routes:
 
 - `/` (all tickets)
 - `/(authenticated)/tickets` (current user's tickets)
 
-Both routes pass `searchParams` into the same list component (`TicketList`), so behavior is shared.
+Both routes parse query params with the same parser config and pass parsed values to `TicketList`.
 
 ## High-Level Flow
 
 ```mermaid
 flowchart TD
-  A[User types in SearchInput or picks SortSelect option] --> B[Client component updates URL query params]
-  B --> C[Next.js route re-renders with new searchParams]
-  C --> D[TicketList normalizes searchParams values]
-  D --> E[getTickets builds Prisma where/orderBy]
-  E --> F[prisma.ticket.findMany executes query]
-  F --> G[TicketList renders TicketItem list or empty Placeholder]
+  A[User types in search input or selects sort option] --> B[nuqs useQueryState/useQueryStates updates URL query params]
+  B --> C[Next.js route receives updated searchParams]
+  C --> D[searchParamsCache.parse normalizes defaults and valid literals]
+  D --> E[TicketList receives ParsedSearchParams]
+  E --> F[getTickets builds Prisma where/orderBy]
+  F --> G[prisma.ticket.findMany executes query]
+  G --> H[TicketList renders TicketItem list or empty Placeholder]
 ```
 
 ## Route-Level Wiring
 
 ### Home tickets route (`/`)
 
-`src/app/page.tsx`:
+File: `src/app/page.tsx`
 
-- Accepts `searchParams` in `HomePage`.
-- Passes `searchParams` to `TicketList`.
-- Uses `Suspense` with `TicketListSkeleton` while async list data resolves.
+- Receives route `searchParams` as `Promise<Record<string, string | string[] | undefined>>`.
+- Parses params via `searchParamsCache.parse(searchParams)`.
+- Passes parsed params into `TicketList`.
+- Uses `Suspense` + `TicketListSkeleton` while ticket list resolves.
 
 ### Authenticated tickets route (`/tickets`)
 
-`src/app/(authenticated)/tickets/page.tsx`:
+File: `src/app/(authenticated)/tickets/page.tsx`
 
-- Accepts `searchParams` in `TicketsPage`.
-- Loads authenticated user via `getAuth()`.
-- Passes both `userId` and `searchParams` to `TicketList`.
-- Reuses the same search/sort implementation as the home route, but with user filtering.
+- Uses the same `searchParamsCache.parse(searchParams)` flow.
+- Fetches user via `getAuth()`.
+- Passes both `userId` and parsed params to `TicketList`.
+- Reuses the same search/sort behavior while scoping results to the current user.
 
-## Search Params Types
+## Search Params Parsing (`nuqs`)
 
-`src/features/ticket/search-params.tsx` defines two levels:
+File: `src/features/ticket/search-params.tsx`
 
-- `SearchParamsRaw`: allows `string | string[] | undefined` for each key (matching Next.js route param shape).
-- `SearchParams`: supports both direct object and promised object (`SearchParamsRaw | Promise<SearchParamsRaw>`), since server components can receive async `searchParams`.
-- `SearchParamsValue`: normalized value consumed by the data layer (`search?: string`, `sort?: string`).
+The project uses `nuqs/server` parsers and cache:
 
-This split keeps the route and component contracts type-safe while isolating normalization logic.
+- `searchParser`:
+  - parser: `parseAsString`
+  - default: `""`
+  - options: `{ shallow: false, clearOnDefault: true }`
+- `sortParser.sortKey`:
+  - parser: `parseAsStringLiteral(["createdAt", "bounty"])`
+  - default: `"createdAt"`
+  - options: `{ shallow: false, clearOnDefault: true }`
+- `sortParser.sortValue`:
+  - parser: `parseAsStringLiteral(["asc", "desc"])`
+  - default: `"desc"`
+  - options: `{ shallow: false, clearOnDefault: true }`
 
-## UI Controls (Client Components)
+`searchParamsCache` combines these into one parse contract and returns `ParsedSearchParams`.
 
-## 1) Search Input
+Practical URL keys are now:
 
-File: `src/components/search-input.tsx`
+- `search`
+- `sortKey`
+- `sortValue`
 
-- Uses Next navigation hooks: `useSearchParams`, `usePathname`, `useRouter`.
-- On input change, uses a 300ms debounce (`useDebouncedCallback`) to avoid re-render/query spam.
-- Builds `URLSearchParams` from current query string.
-- Writes `search` when there is text.
-- Deletes `search` when input is empty.
-- Calls `router.replace()` with `scroll: false` so filtering does not push browser history entries and does not jump the page.
+Because `clearOnDefault` is enabled, default values are omitted from the URL.
 
-Result: URL becomes:
+## Client Controls
 
-- `?search=bug`
-- or clears back to no `search` key.
+### Search UI
 
-## 2) Sort Select
+Files:
 
-File: `src/components/sort-select.tsx`
+- `src/features/ticket/components/ticket-search-input.tsx`
+- `src/components/search-input.tsx`
 
-- Uses the same Next navigation hooks.
-- Receives:
-  - `defaultValue` (current usage: `"newest"`)
-  - `options` (current usage: `"newest"` and `"bounty"`)
-- On selection:
-  - if selected value equals `defaultValue`, deletes `sort` from URL
-  - otherwise sets `sort=<value>`
-- Uses `router.replace(..., { scroll: false })`.
-- Initializes select value from URL (`searchParams.get("sort")`) and falls back to `defaultValue`.
+Behavior:
 
-Result:
+- `TicketSearchInput` uses `useQueryState("search", searchParser)`.
+- Base `SearchInput` is a controlled input (`value` + `onChange`).
+- Every change writes through `nuqs` setter.
+- Empty input returns to the parser default (`""`), and with `clearOnDefault: true`, `search` is removed from URL.
 
-- Default ordering is represented by no `sort` key in URL.
-- Explicit non-default ordering is represented by `?sort=bounty`.
+### Sort UI
+
+Files:
+
+- `src/features/ticket/components/ticket-sort-select.tsx`
+- `src/components/sort-select.tsx`
+
+Behavior:
+
+- `TicketSortSelect` uses `useQueryStates(sortParser)`.
+- Base `SortSelect` works with a `SortObject` shape:
+  - `sortKey`: `"createdAt"` | `"bounty"`
+  - `sortValue`: `"asc"` | `"desc"`
+- Option values are encoded as a composite string (`<sortKey>_<sortValue>`) and decoded on selection.
+- Current options rendered by `TicketList`:
+  - `createdAt + desc` labeled `Newest`
+  - `bounty + desc` labeled `Bounty`
 
 ## Server List Component
 
 File: `src/features/ticket/components/ticket-list.tsx`
 
-`TicketList` is an async server component and acts as the bridge between URL params and the query layer.
+`TicketList` is an async server component that:
 
-Steps:
+1. Receives already parsed `ParsedSearchParams`.
+2. Calls `getTickets(userId, searchParams)` directly.
+3. Renders search and sort controls.
+4. Renders `TicketItem` list, or `Placeholder` when no results.
 
-1. Awaits `searchParams`.
-2. Normalizes `search` and `sort` from possible array values to single strings (first array element).
-3. Calls `getTickets(userId, paramsOrUndefined)`, passing search/sort only when at least one value exists.
-4. Renders:
-   - `SearchInput`
-   - `SortSelect`
-   - ticket list (mapped `TicketItem`) or `Placeholder` when empty.
-
-Current sort options passed into `SortSelect`:
-
-- `newest` (default)
-- `bounty`
+No additional manual normalization of arrays is needed because parsing is handled upstream by `searchParamsCache`.
 
 ## Query Layer (Prisma)
 
 File: `src/features/ticket/queries/get-tickets.tsx`
 
-`getTickets(userId?, searchParams?)` builds dynamic Prisma conditions:
+`getTickets(userId, searchParams)` uses parsed params to construct Prisma query parts:
 
 ### where
 
-- Adds `userId` filter only when `userId` is provided (used on authenticated tickets route).
-- Adds case-insensitive title search when `searchParams.search` is present:
-  - `title contains <search>`
-  - `mode: "insensitive"`
+- `userId` is always included in `where`; when undefined it does not constrain results.
+- Title search is always present as:
+  - `title.contains = searchParams.search`
+  - `title.mode = "insensitive"`
+
+Given the parser default is empty string, `contains: ""` effectively matches all titles when search is not provided.
 
 ### orderBy
 
-Current implementation:
+`orderBy` is selected from parsed sort key:
 
-- `sort === "bounty"` -> `{ bounty: "desc" }`
-- all other cases -> `{ createdAt: "desc" }`
+- if `sortKey === "bounty"` -> `{ bounty: sortValue }`
+- else -> `{ createdAt: sortValue }`
 
-So practical sort behavior is:
+With current UI options, effective sort choices are:
 
-- default or unknown sort value => newest first
-- bounty sort => highest bounty first
+- newest first (`createdAt desc`)
+- highest bounty first (`bounty desc`)
+
+The parser also supports `asc`, so ascending order is valid if supplied in URL.
 
 ### include
 
-The query includes the ticket creator username:
+The query includes ticket creator username:
 
 - `include.user.select.username = true`
 
-This supports rendering metadata in list items without an additional query.
-
 ## End-To-End Behavior Summary
 
-- User changes search/sort in client controls.
-- URL query string is updated with debounced search and immediate sort changes.
-- Route re-renders with new `searchParams`.
-- `TicketList` normalizes params and fetches tickets via `getTickets`.
-- Prisma applies user scope, title search, and sorting.
-- UI updates with matching and ordered tickets.
+- Client controls sync search/sort state to URL using `nuqs`.
+- Route components parse and validate URL params via `searchParamsCache`.
+- `TicketList` receives typed parsed params and fetches data.
+- Prisma applies user scope, case-insensitive title filter, and dynamic sort.
+- UI re-renders with filtered and ordered tickets.
 
-## Defaults, Fallbacks, And Edge Cases
+## Defaults, Validation, And Edge Cases
 
-- **Default sort:** newest first (`createdAt desc`), represented by missing `sort` query param.
-- **Unknown sort values:** fallback to newest first.
-- **Empty search input:** removes `search` param and disables text filtering.
-- **Array query params:** first value is used (`search[0]`, `sort[0]`).
-- **Debounce behavior:** search waits 300ms before URL update.
-- **History behavior:** both controls use `router.replace`, so each change does not create new browser history entries.
+- **Default search:** empty string (`search=""`); URL key omitted due to `clearOnDefault`.
+- **Default sort:** `sortKey="createdAt"` + `sortValue="desc"`; keys omitted when default.
+- **Invalid sort literals:** rejected by parser and replaced by defaults.
+- **Search matching:** case-insensitive (`mode: "insensitive"`).
+- **Ascending support:** parser and query support `asc` even though current UI only exposes `desc` presets.
 
 ## Implementation References
 
 - Route (all tickets): `src/app/page.tsx`
 - Route (my tickets): `src/app/(authenticated)/tickets/page.tsx`
-- Search/sort list bridge: `src/features/ticket/components/ticket-list.tsx`
-- Search input: `src/components/search-input.tsx`
-- Sort select: `src/components/sort-select.tsx`
-- Query params typing: `src/features/ticket/search-params.tsx`
+- Search/sort parser: `src/features/ticket/search-params.tsx`
+- Ticket list bridge: `src/features/ticket/components/ticket-list.tsx`
+- Ticket search binder: `src/features/ticket/components/ticket-search-input.tsx`
+- Ticket sort binder: `src/features/ticket/components/ticket-sort-select.tsx`
+- Base search input: `src/components/search-input.tsx`
+- Base sort select: `src/components/sort-select.tsx`
 - Data query: `src/features/ticket/queries/get-tickets.tsx`

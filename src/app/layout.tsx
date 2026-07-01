@@ -2,6 +2,7 @@ import "./globals.css";
 
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import { Header } from "@/app/_navigation/Header";
 import { SidebarComponent } from "@/app/_navigation/sidebar/components/sidebar";
@@ -28,26 +29,28 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="en">
       <body className={`${inter.variable} ${inter.className} antialiased`}>
-        <ThemeProvider>
-          <TooltipProvider>
-            <SidebarProvider className="overflow-hidden border-collapse">
-              <Header />
-              <SidebarComponent />
-              <SidebarInset
-                className="
+        <NuqsAdapter>
+          <ThemeProvider>
+            <TooltipProvider>
+              <SidebarProvider className="overflow-hidden border-collapse">
+                <Header />
+                <SidebarComponent />
+                <SidebarInset
+                  className="
                   min-h-screen
                   overflow-y-auto overflow-x-hidden
                   py-24 px-8
                   bg-secondary/20
                   flex flex-col
                 "
-              >
-                {children}
-              </SidebarInset>
-            </SidebarProvider>
-            <Toaster />
-          </TooltipProvider>
-        </ThemeProvider>
+                >
+                  {children}
+                </SidebarInset>
+              </SidebarProvider>
+              <Toaster />
+            </TooltipProvider>
+          </ThemeProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );
